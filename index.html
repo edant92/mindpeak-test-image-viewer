@@ -1,0 +1,80 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <title>MindPeak Test Image Viewer Dragon</title>
+    <meta name="description"
+          content="Image Viewer based on OpenSeaDragon that allows user to drag-to-select and then double-click to download the image.">
+    <meta name="author" content="Edward Stevens">
+
+</head>
+
+<body>
+<div id="openseadragon1" style="width: 800px; height: 600px;"></div>
+<script src="dependencies/openseadragon.min.js"></script>
+<script src="dependencies/FileSaver.min.js"></script>
+<script type="text/javascript">
+  let viewer = OpenSeadragon({
+    id: "openseadragon1",
+    prefixUrl: "./images/",
+    tileSources: "http://88.99.242.100:50004/01%2F03%2F0001.jpg/info.json",
+    crossOriginPolicy: "Anonymous",
+
+  });
+
+  let startPosition = 0;
+
+  viewer.addHandler('canvas-press', function (event) {
+    startPosition = event.position;
+  });
+
+  viewer.addHandler('canvas-drag', function (event) {
+    event.preventDefaultAction = true;
+  });
+
+  viewer.addHandler('canvas-drag-end', function (event) {
+
+    let webPoint = event.position;
+
+    let viewportPoint = viewer.viewport.pointFromPixel(webPoint);
+    let viewportPointStart = viewer.viewport.pointFromPixel(startPosition);
+
+    let elt2 = document.createElement("div");
+    elt2.id = "runtime-overlay";
+    elt2.className = "highlight";
+    elt2.style.background = "white";
+    elt2.style.opacity = "0.5";
+    elt2.style.outline = "1px solid blue";
+
+    viewer.addOverlay({
+      element: elt2,
+      x: viewportPointStart.x,
+      y: viewportPointStart.y,
+      width: viewportPoint.x - viewportPointStart.x,
+      height: viewportPoint.y - viewportPointStart.y,
+    });
+
+    let imagePoint = viewer.viewport.viewportToImageCoordinates(viewportPoint);
+    let imagePointStart = viewer.viewport.viewportToImageCoordinates(viewportPointStart);
+
+    let region = Math.round(imagePointStart.x) + ","
+      + Math.round(imagePointStart.y) + ","
+      + Math.round(imagePoint.x - imagePointStart.x) + ","
+      + Math.round(imagePoint.y - imagePointStart.y);
+
+    new OpenSeadragon.MouseTracker({
+      element: elt2,
+      dblClickHandler: function () {
+        let imageDownloadRequestURL = "http://88.99.242.100:50004/01%2F03%2F0001.jpg/" + region + "/1024,/0/default.png";
+        saveAs(imageDownloadRequestURL, "selected_image.png");
+      }
+    });
+
+  });
+
+
+</script>
+</body>
+</html>
