@@ -92,8 +92,16 @@
   new OpenSeadragon.MouseTracker({
     element: elt2,
     dblClickHandler: function () {
+
       let imageDownloadRequestURL = "http://88.99.242.100:50004/01%2F03%2F0001.jpg/" + region + "/1024,/0/default.png";
-      saveAs(imageDownloadRequestURL, "sample.png");
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", imageDownloadRequestURL);
+      xhr.responseType = 'blob';
+      xhr.onload = function() {
+        saveAs(xhr.response, "sample.png");
+      };
+      xhr.send()
+
     }
   });
 
