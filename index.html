@@ -112,12 +112,15 @@
       if (buttonDown) {
         selectEnabled = false;
         buttonDown = false;
-        console.log('toggleButton.currentState UP: ', toggleButton.currentState);
         toggleButton.currentState = OpenSeadragon.ButtonState.DOWN;
+
+        let r = new OpenSeadragon.Rect(0, 0, 0, 0);
+        let overlay = viewer.getOverlayById("runtime-overlay");
+        overlay.update(r, OpenSeadragon.Placement.CENTER);
+        viewer.forceRedraw();
       } else {
         selectEnabled = true;
         buttonDown = true;
-        console.log('toggleButton.currentState DOWN: ', toggleButton.currentState);
         toggleButton.currentState = OpenSeadragon.ButtonState.REST;
       }
 
