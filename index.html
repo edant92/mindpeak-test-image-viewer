@@ -46,7 +46,6 @@
   viewer.addHandler('canvas-press', function (event) {
     if (selectEnabled) {
       startPosition = event.position;
-      console.log("start of drag");
     }
   });
 
@@ -72,7 +71,6 @@
 
   viewer.addHandler('canvas-release', function (event) {
     if (selectEnabled) {
-      console.log("end of drag");
 
       let webPoint = event.position;
 
@@ -114,8 +112,6 @@
     srcHover: './images/baseline_transform_white_18dp.png',
     srcDown: './images/baseline_transform_white_18dp.png',
     onPress: function () {
-
-      console.log('pressed');
 
       if (buttonDown) {
         selectEnabled = false;
