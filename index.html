@@ -24,6 +24,8 @@
 
   });
 
+  let selectEnabled = false;
+
   let startPosition = 0;
 
   let elt2 = document.createElement("div");
@@ -42,46 +44,49 @@
   });
 
   viewer.addHandler('canvas-press', function (event) {
-    startPosition = event.position;
-    console.log("start of drag");
+    if (selectEnabled) {
+      startPosition = event.position;
+      console.log("start of drag");
+    }
   });
 
   viewer.addHandler('canvas-drag', function (event) {
-    event.preventDefaultAction = true;
+    if (selectEnabled) {
+      event.preventDefaultAction = true;
 
-    let webPoint = event.position;
+      let webPoint = event.position;
 
-    let viewportPoint = viewer.viewport.pointFromPixel(webPoint);
-    let viewportPointStart = viewer.viewport.pointFromPixel(startPosition);
+      let viewportPoint = viewer.viewport.pointFromPixel(webPoint);
+      let viewportPointStart = viewer.viewport.pointFromPixel(startPosition);
 
-    let overlay = viewer.getOverlayById("runtime-overlay");
+      let overlay = viewer.getOverlayById("runtime-overlay");
 
-    let r = new OpenSeadragon.Rect(viewportPointStart.x, viewportPointStart.y, (viewportPoint.x - viewportPointStart.x),
-      (viewportPoint.y - viewportPointStart.y));
-    overlay.update(r, OpenSeadragon.Placement.CENTER);
-    viewer.forceRedraw();
-
+      let r = new OpenSeadragon.Rect(viewportPointStart.x, viewportPointStart.y, (viewportPoint.x - viewportPointStart.x),
+        (viewportPoint.y - viewportPointStart.y));
+      overlay.update(r, OpenSeadragon.Placement.CENTER);
+      viewer.forceRedraw();
+    }
   });
 
   let region = null;
 
   viewer.addHandler('canvas-release', function (event) {
+    if (selectEnabled) {
+      console.log("end of drag");
 
-    console.log("end of drag");
+      let webPoint = event.position;
 
-    let webPoint = event.position;
+      let viewportPoint = viewer.viewport.pointFromPixel(webPoint);
+      let viewportPointStart = viewer.viewport.pointFromPixel(startPosition);
 
-    let viewportPoint = viewer.viewport.pointFromPixel(webPoint);
-    let viewportPointStart = viewer.viewport.pointFromPixel(startPosition);
+      let imagePoint = viewer.viewport.viewportToImageCoordinates(viewportPoint);
+      let imagePointStart = viewer.viewport.viewportToImageCoordinates(viewportPointStart);
 
-    let imagePoint = viewer.viewport.viewportToImageCoordinates(viewportPoint);
-    let imagePointStart = viewer.viewport.viewportToImageCoordinates(viewportPointStart);
-
-    region = Math.round(imagePointStart.x) + ","
-      + Math.round(imagePointStart.y) + ","
-      + Math.round(imagePoint.x - imagePointStart.x) + ","
-      + Math.round(imagePoint.y - imagePointStart.y);
-
+      region = Math.round(imagePointStart.x) + ","
+        + Math.round(imagePointStart.y) + ","
+        + Math.round(imagePoint.x - imagePointStart.x) + ","
+        + Math.round(imagePoint.y - imagePointStart.y);
+    }
   });
 
   new OpenSeadragon.MouseTracker({
@@ -90,6 +95,39 @@
       let imageDownloadRequestURL = "http://88.99.242.100:50004/01%2F03%2F0001.jpg/" + region + "/1024,/0/default.png";
       saveAs(imageDownloadRequestURL, "sample.png");
     }
+  });
+
+  let buttonDown = false;
+
+  let toggleButton = new OpenSeadragon.Button({
+    tooltip: 'Toggle Select',
+    srcRest: './images/baseline_transform_black_18dp.png',
+    srcGroup: './images/baseline_transform_black_18dp.png',
+    srcHover: './images/baseline_transform_white_18dp.png',
+    srcDown: './images/baseline_transform_white_18dp.png',
+    onPress: function () {
+
+      console.log('pressed');
+
+      if (buttonDown) {
+        selectEnabled = false;
+        buttonDown = false;
+        console.log('toggleButton.currentState UP: ', toggleButton.currentState);
+        toggleButton.currentState = OpenSeadragon.ButtonState.DOWN;
+      } else {
+        selectEnabled = true;
+        buttonDown = true;
+        console.log('toggleButton.currentState DOWN: ', toggleButton.currentState);
+        toggleButton.currentState = OpenSeadragon.ButtonState.REST;
+      }
+
+    },
+  });
+
+  viewer.addHandler('open', () => {
+
+
+    viewer.addControl(toggleButton.element, {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
   });
 
 
