@@ -1,4 +1,10 @@
+body {
+    background-color: white;
+    margin: 0;
+}
+
 #openseadragon-viewer {
     width: 800px;
     height: 600px;
+    margin: auto;
 }
