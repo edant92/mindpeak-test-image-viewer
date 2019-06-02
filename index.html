@@ -95,7 +95,7 @@
       var xhr = new XMLHttpRequest();
       xhr.open("GET", imageDownloadRequestURL);
       xhr.responseType = 'blob';
-      xhr.onload = function() {
+      xhr.onload = function () {
         saveAs(xhr.response, "sample.png");
       };
       xhr.send()
@@ -107,10 +107,10 @@
 
   let toggleButton = new OpenSeadragon.Button({
     tooltip: 'Toggle Select',
-    srcRest: './images/baseline_transform_black_18dp.png',
-    srcGroup: './images/baseline_transform_black_18dp.png',
-    srcHover: './images/baseline_transform_white_18dp.png',
-    srcDown: './images/baseline_transform_white_18dp.png',
+    srcRest: './images/select_save_rest.png',
+    srcGroup: './images/select_save_grouphover.png',
+    srcHover: './images/select_save_hover.png',
+    srcDown: './images/select_save_pressed.png',
     onPress: function () {
 
       if (buttonDown) {
