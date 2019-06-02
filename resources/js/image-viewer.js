@@ -31,6 +31,7 @@ viewer.addHandler('canvas-press', function (event) {
   }
 });
 
+
 viewer.addHandler('canvas-drag', function (event) {
   if (selectEnabled) {
     event.preventDefaultAction = true;
@@ -40,10 +41,27 @@ viewer.addHandler('canvas-drag', function (event) {
     let viewportPoint = viewer.viewport.pointFromPixel(webPoint);
     let viewportPointStart = viewer.viewport.pointFromPixel(startPosition);
 
+    let startx = viewportPointStart.x;
+    let starty = viewportPointStart.y;
+
+    let width = (viewportPoint.x - viewportPointStart.x);
+    if ((viewportPoint.x - viewportPointStart.x) < 0) {
+      width = Math.abs(viewportPointStart.x - viewportPoint.x);
+      startx = viewportPoint.x;
+      starty = viewportPoint.y;
+    }
+
+    let height = (viewportPoint.y - viewportPointStart.y);
+    if ((viewportPoint.y - viewportPointStart.y) < 0) {
+      height = Math.abs(viewportPointStart.y - viewportPoint.y);
+      startx = viewportPoint.x;
+      starty = viewportPoint.y;
+    }
+
     let overlay = viewer.getOverlayById("area-selector-overlay");
 
-    let r = new OpenSeadragon.Rect(viewportPointStart.x, viewportPointStart.y, (viewportPoint.x - viewportPointStart.x),
-      (viewportPoint.y - viewportPointStart.y));
+    let r = new OpenSeadragon.Rect(startx, starty, width,
+      height);
     overlay.update(r, OpenSeadragon.Placement.CENTER);
     viewer.forceRedraw();
   }
@@ -62,10 +80,27 @@ viewer.addHandler('canvas-release', function (event) {
     let imagePoint = viewer.viewport.viewportToImageCoordinates(viewportPoint);
     let imagePointStart = viewer.viewport.viewportToImageCoordinates(viewportPointStart);
 
-    region = Math.round(imagePointStart.x) + ","
-      + Math.round(imagePointStart.y) + ","
-      + Math.round(imagePoint.x - imagePointStart.x) + ","
-      + Math.round(imagePoint.y - imagePointStart.y);
+    let startx = imagePointStart.x;
+    let starty = imagePointStart.y;
+
+    let width = (imagePoint.x - imagePointStart.x);
+    if ((imagePoint.x - imagePointStart.x) < 0) {
+      width = Math.abs(imagePointStart.x - imagePoint.x);
+      startx = imagePoint.x;
+      starty = imagePoint.y;
+    }
+
+    let height = (imagePoint.y - imagePointStart.y);
+    if ((imagePoint.y - imagePointStart.y) < 0) {
+      height = Math.abs(imagePointStart.y - imagePoint.y);
+      startx = imagePoint.x;
+      starty = imagePoint.y;
+    }
+
+    region = Math.round(startx) + ","
+      + Math.round(starty) + ","
+      + Math.round(width) + ","
+      + Math.round(height);
   }
 });
 
