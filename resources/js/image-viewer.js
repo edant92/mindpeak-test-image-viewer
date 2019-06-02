@@ -45,16 +45,21 @@ viewer.addHandler('canvas-drag', function (event) {
     let starty = viewportPointStart.y;
 
     let width = (viewportPoint.x - viewportPointStart.x);
-    if ((viewportPoint.x - viewportPointStart.x) < 0) {
-      width = Math.abs(viewportPointStart.x - viewportPoint.x);
-      startx = viewportPoint.x;
-      starty = viewportPoint.y;
-    }
-
     let height = (viewportPoint.y - viewportPointStart.y);
-    if ((viewportPoint.y - viewportPointStart.y) < 0) {
+
+    if ((width < 0) && (height < 0)) {
+      width = Math.abs(viewportPointStart.x - viewportPoint.x);
       height = Math.abs(viewportPointStart.y - viewportPoint.y);
       startx = viewportPoint.x;
+      starty = viewportPoint.y;
+    } else if ((width < 0) && (height > 0)) {
+      width = Math.abs(viewportPoint.x - viewportPointStart.x);
+      height = Math.abs(viewportPoint.y - viewportPointStart.y);
+      startx = viewportPoint.x;
+      starty = viewportPoint.y - height;
+    } else if ((width > 0) && (height < 0)) {
+      height = Math.abs(viewportPointStart.y - viewportPoint.y);
+      startx = viewportPoint.x - width;
       starty = viewportPoint.y;
     }
 
@@ -82,18 +87,22 @@ viewer.addHandler('canvas-release', function (event) {
 
     let startx = imagePointStart.x;
     let starty = imagePointStart.y;
-
     let width = (imagePoint.x - imagePointStart.x);
-    if ((imagePoint.x - imagePointStart.x) < 0) {
-      width = Math.abs(imagePointStart.x - imagePoint.x);
-      startx = imagePoint.x;
-      starty = imagePoint.y;
-    }
-
     let height = (imagePoint.y - imagePointStart.y);
-    if ((imagePoint.y - imagePointStart.y) < 0) {
+
+    if ((width < 0) && (height < 0)) {
+      width = Math.abs(imagePointStart.x - imagePoint.x);
       height = Math.abs(imagePointStart.y - imagePoint.y);
       startx = imagePoint.x;
+      starty = imagePoint.y;
+    } else if ((width < 0) && (height > 0)) {
+      width = Math.abs(imagePoint.x - imagePointStart.x);
+      height = Math.abs(imagePoint.y - imagePointStart.y);
+      startx = imagePoint.x;
+      starty = imagePoint.y - height;
+    } else if ((width > 0) && (height < 0)) {
+      height = Math.abs(imagePointStart.y - imagePoint.y);
+      startx = imagePoint.x - width;
       starty = imagePoint.y;
     }
 
