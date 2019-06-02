@@ -41,38 +41,36 @@ viewer.addHandler('canvas-drag', function (event) {
     let viewportPoint = viewer.viewport.pointFromPixel(webPoint);
     let viewportPointStart = viewer.viewport.pointFromPixel(startPosition);
 
-    let startx = viewportPointStart.x;
-    let starty = viewportPointStart.y;
+    let overlayX = viewportPointStart.x;
+    let overlayY = viewportPointStart.y;
+    let overlayWidth = (viewportPoint.x - viewportPointStart.x);
+    let overlayHeight = (viewportPoint.y - viewportPointStart.y);
 
-    let width = (viewportPoint.x - viewportPointStart.x);
-    let height = (viewportPoint.y - viewportPointStart.y);
-
-    if ((width < 0) && (height < 0)) {
-      width = Math.abs(viewportPointStart.x - viewportPoint.x);
-      height = Math.abs(viewportPointStart.y - viewportPoint.y);
-      startx = viewportPoint.x;
-      starty = viewportPoint.y;
-    } else if ((width < 0) && (height > 0)) {
-      width = Math.abs(viewportPoint.x - viewportPointStart.x);
-      height = Math.abs(viewportPoint.y - viewportPointStart.y);
-      startx = viewportPoint.x;
-      starty = viewportPoint.y - height;
-    } else if ((width > 0) && (height < 0)) {
-      height = Math.abs(viewportPointStart.y - viewportPoint.y);
-      startx = viewportPoint.x - width;
-      starty = viewportPoint.y;
+    if ((overlayWidth < 0) && (overlayHeight < 0)) {
+      overlayWidth = Math.abs(viewportPointStart.x - viewportPoint.x);
+      overlayHeight = Math.abs(viewportPointStart.y - viewportPoint.y);
+      overlayX = viewportPoint.x;
+      overlayY = viewportPoint.y;
+    } else if ((overlayWidth < 0) && (overlayHeight > 0)) {
+      overlayWidth = Math.abs(viewportPoint.x - viewportPointStart.x);
+      overlayX = viewportPoint.x;
+      overlayY = viewportPoint.y - overlayHeight;
+    } else if ((overlayWidth > 0) && (overlayHeight < 0)) {
+      overlayHeight = Math.abs(viewportPointStart.y - viewportPoint.y);
+      overlayX = viewportPoint.x - overlayWidth;
+      overlayY = viewportPoint.y;
     }
 
     let overlay = viewer.getOverlayById("area-selector-overlay");
 
-    let r = new OpenSeadragon.Rect(startx, starty, width,
-      height);
+    let r = new OpenSeadragon.Rect(overlayX, overlayY, overlayWidth,
+      overlayHeight);
     overlay.update(r, OpenSeadragon.Placement.CENTER);
     viewer.forceRedraw();
   }
 });
 
-let region = null;
+let imageRegion = null;
 
 viewer.addHandler('canvas-release', function (event) {
   if (selectEnabled) {
@@ -85,31 +83,30 @@ viewer.addHandler('canvas-release', function (event) {
     let imagePoint = viewer.viewport.viewportToImageCoordinates(viewportPoint);
     let imagePointStart = viewer.viewport.viewportToImageCoordinates(viewportPointStart);
 
-    let startx = imagePointStart.x;
-    let starty = imagePointStart.y;
-    let width = (imagePoint.x - imagePointStart.x);
-    let height = (imagePoint.y - imagePointStart.y);
+    let overlayX = imagePointStart.x;
+    let overlayY = imagePointStart.y;
+    let overlayWidth = (imagePoint.x - imagePointStart.x);
+    let overlayHeight = (imagePoint.y - imagePointStart.y);
 
-    if ((width < 0) && (height < 0)) {
-      width = Math.abs(imagePointStart.x - imagePoint.x);
-      height = Math.abs(imagePointStart.y - imagePoint.y);
-      startx = imagePoint.x;
-      starty = imagePoint.y;
-    } else if ((width < 0) && (height > 0)) {
-      width = Math.abs(imagePoint.x - imagePointStart.x);
-      height = Math.abs(imagePoint.y - imagePointStart.y);
-      startx = imagePoint.x;
-      starty = imagePoint.y - height;
-    } else if ((width > 0) && (height < 0)) {
-      height = Math.abs(imagePointStart.y - imagePoint.y);
-      startx = imagePoint.x - width;
-      starty = imagePoint.y;
+    if ((overlayWidth < 0) && (overlayHeight < 0)) {
+      overlayWidth = Math.abs(imagePointStart.x - imagePoint.x);
+      overlayHeight = Math.abs(imagePointStart.y - imagePoint.y);
+      overlayX = imagePoint.x;
+      overlayY = imagePoint.y;
+    } else if ((overlayWidth < 0) && (overlayHeight > 0)) {
+      overlayWidth = Math.abs(imagePoint.x - imagePointStart.x);
+      overlayX = imagePoint.x;
+      overlayY = imagePoint.y - overlayHeight;
+    } else if ((overlayWidth > 0) && (overlayHeight < 0)) {
+      overlayHeight = Math.abs(imagePointStart.y - imagePoint.y);
+      overlayX = imagePoint.x - overlayWidth;
+      overlayY = imagePoint.y;
     }
 
-    region = Math.round(startx) + ","
-      + Math.round(starty) + ","
-      + Math.round(width) + ","
-      + Math.round(height);
+    imageRegion = Math.round(overlayX) + ","
+      + Math.round(overlayY) + ","
+      + Math.round(overlayWidth) + ","
+      + Math.round(overlayHeight);
   }
 });
 
@@ -117,7 +114,7 @@ new OpenSeadragon.MouseTracker({
   element: elt2,
   dblClickHandler: function () {
 
-    let imageDownloadRequestURL = "http://88.99.242.100:50004/01%2F03%2F0001.jpg/" + region + "/1024,/0/default.png";
+    let imageDownloadRequestURL = "http://88.99.242.100:50004/01%2F03%2F0001.jpg/" + imageRegion + "/1024,/0/default.png";
     var xhr = new XMLHttpRequest();
     xhr.open("GET", imageDownloadRequestURL);
     xhr.responseType = 'blob';
