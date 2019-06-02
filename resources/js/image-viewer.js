@@ -31,7 +31,6 @@ viewer.addHandler('canvas-press', function (event) {
   }
 });
 
-
 viewer.addHandler('canvas-drag', function (event) {
   if (selectEnabled) {
     event.preventDefaultAction = true;
@@ -156,4 +155,27 @@ let toggleButton = new OpenSeadragon.Button({
 
 viewer.addHandler('open', () => {
   viewer.addControl(toggleButton.element, {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
+});
+
+viewer.addHandler('canvas-key', function (event) {
+
+  if (event.originalEvent.keyCode === 69) {
+
+    if (buttonDown) {
+      selectEnabled = false;
+      buttonDown = false;
+      toggleButton.currentState = OpenSeadragon.ButtonState.DOWN;
+
+      let r = new OpenSeadragon.Rect(0, 0, 0, 0);
+      let overlay = viewer.getOverlayById("area-selector-overlay");
+      overlay.update(r, OpenSeadragon.Placement.CENTER);
+      viewer.forceRedraw();
+    } else {
+      selectEnabled = true;
+      buttonDown = true;
+      toggleButton.currentState = OpenSeadragon.ButtonState.REST;
+    }
+
+  }
+
 });
