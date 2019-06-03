@@ -118,7 +118,41 @@ new OpenSeadragon.MouseTracker({
     xhr.open("GET", imageDownloadRequestURL);
     xhr.responseType = 'blob';
     xhr.onload = function () {
-      saveAs(xhr.response, "sample.png");
+
+      loadImage.parseMetaData(xhr.response, function () {
+
+        let orientation = 1;
+        let viewOrientation = viewer.viewport.getRotation();
+
+        switch (viewOrientation) {
+          case 0:
+            orientation = 1;
+            break;
+          case 90:
+            orientation = 6;
+            break;
+          case 180:
+            orientation = 3;
+            break;
+          case 270:
+            orientation = 8;
+            break;
+        }
+
+        loadImage(
+          xhr.response,
+          function (canvas) {
+
+            let base64data = canvas.toDataURL('image/png');
+            saveAs(base64data, "sample.png");
+
+          }, {
+            canvas: true,
+            orientation: orientation
+          }
+        );
+      });
+
     };
     xhr.send()
 
